@@ -5,6 +5,7 @@ import Image from "next/image";
 import nlwLogo from "@/assets/nlw-spacetime-logo.svg";
 
 export default function Home() {
+  const login = `https://github.com/login/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID}`
   return (
     <main className="grid min-h-screen grid-cols-2">
       {/* Left */}
@@ -17,7 +18,7 @@ export default function Home() {
 
         {/* Signin */}
         <Link
-          href="#"
+          href={login}
           className="flex items-center gap-3 text-left transition-colors hover:text-gray-50"
         >
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-400">
@@ -68,7 +69,7 @@ export default function Home() {
         <div className="flex flex-1 items-center justify-center">
           <p className="w-[360px] text-center leading-relaxed">
             Você ainda não registrou nenhuma lembrança, comece a{" "}
-            <Link href="#" className="underline hover:text-gray-50">
+            <Link href={login} className="underline hover:text-gray-50">
               criar agora
             </Link>
             !
