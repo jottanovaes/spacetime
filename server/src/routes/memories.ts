@@ -47,7 +47,6 @@ export async function memoriesRoutes(app: FastifyInstance) {
   })
 
   app.post('/memories', async (request) => {
-    console.log(request)
     const bodySchema = z.object({
       content: z.string(),
       coverUrl: z.string(),

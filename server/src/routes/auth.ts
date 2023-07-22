@@ -8,7 +8,6 @@ export async function authRoutes(app: FastifyInstance) {
     const bodySchema = z.object({
       code: z.string(),
     })
-
     const { code } = bodySchema.parse(request.body)
 
     const accessTokenResponse = await axios.post(
