@@ -38,7 +38,13 @@ export default function App() {
 
     router.push('/memories')
   }
+
   useEffect(() => {
+    // console.log(
+    //   makeRedirectUri({
+    //     scheme: 'nlwspacetime',
+    //   }),
+    // )
     if (response?.type === 'success') {
       const { code } = response.params
       handleGitHubOAuthCode(code)
@@ -62,11 +68,9 @@ export default function App() {
         <TouchableOpacity
           activeOpacity={0.7}
           className="rounded-full bg-green-500 px-5 py-2"
+          onPress={() => signinWithGitHub()}
         >
-          <Text
-            className="font-alt text-sm uppercase text-black"
-            onPress={() => signinWithGitHub()}
-          >
+          <Text className="font-alt text-sm uppercase text-black">
             Cadastrar lembrança
           </Text>
         </TouchableOpacity>

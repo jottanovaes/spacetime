@@ -6,16 +6,20 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import NLWLogo from '../src/assets/nlw-spacetime-logo.svg'
-import { Link } from 'expo-router'
-import Icon from '@expo/vector-icons/Feather'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Switch } from 'react-native-gesture-handler'
 import React, { useState } from 'react'
+import { Link, useRouter } from 'expo-router'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import * as ImagePicker from 'expo-image-picker'
+import { Switch } from 'react-native-gesture-handler'
+import * as SecureStore from 'expo-secure-store'
+
+import NLWLogo from '../src/assets/nlw-spacetime-logo.svg'
+import Icon from '@expo/vector-icons/Feather'
+import { api } from '../src/lib/api'
 
 export default function NewMemories() {
   const { bottom, top } = useSafeAreaInsets()
+  const router = useRouter()
 
   const [isPublic, setIsPublic] = useState(false)
   const [content, setContent] = useState('')
@@ -25,6 +29,7 @@ export default function NewMemories() {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: false,
         quality: 1,
       })
 
@@ -32,12 +37,48 @@ export default function NewMemories() {
         setPreview(result.assets[0].uri)
       }
     } catch (error) {
-      console.log(error)
+      /// TODO: handle error
     }
   }
 
-  function handleCreateMemory() {
-    openImagePicker()
+  async function handleCreateMemory() {
+    const token = await SecureStore.getItemAsync('token')
+    let coverUrl = ''
+
+    if (preview) {
+      const uploadFormData = new FormData()
+
+      uploadFormData.append('image', {
+        uri: preview,
+        name: 'cover.jpeg',
+        type: 'image/jpeg',
+      } as any)
+
+      const uploadResponse = await api.post('/upload', uploadFormData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+
+      coverUrl = uploadResponse?.data.fileUrl
+      console.log(uploadResponse)
+    }
+
+    await api.post(
+      '/memories',
+      {
+        content,
+        isPublic,
+        coverUrl,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+
+    router.push('/memories')
   }
 
   return (
@@ -74,7 +115,8 @@ export default function NewMemories() {
           {preview ? (
             <Image
               source={{ uri: preview }}
-              className="h-full w-full rounded-lg object-cover "
+              className="h-full w-full rounded-lg object-cover"
+              alt=""
             />
           ) : (
             <View className="flex-row items-center gap-2">
@@ -89,6 +131,7 @@ export default function NewMemories() {
         <TextInput
           multiline
           value={content}
+          textAlignVertical="top"
           onChangeText={setContent}
           className="p-0 font-body text-lg text-gray-50"
           placeholder="Fique livre para adicionar fotos, videos e relatos sobre essa experiência que vocẽ quer lembrar para sempre"
@@ -97,14 +140,10 @@ export default function NewMemories() {
 
         <TouchableOpacity
           activeOpacity={0.7}
-          className="items-center rounded-full bg-green-500 px-5 py-2"
+          onPress={handleCreateMemory}
+          className="items-center self-end rounded-full bg-green-500 px-5 py-2"
         >
-          <Text
-            onPress={handleCreateMemory}
-            className="font-alt text-sm uppercase text-black"
-          >
-            Salvar
-          </Text>
+          <Text className="font-alt text-sm uppercase text-black">Salvar</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
