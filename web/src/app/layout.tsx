@@ -47,7 +47,7 @@ export default function RootLayout({
           </div>
 
           {/* Right */}
-          <div className="flex overflow-y-scroll max-height-screen flex-col bg-[url(../assets/bg-stars.svg)] bg-cover">
+          <div className="flex overflow-y-scroll max-h-screen flex-col bg-[url(../assets/bg-stars.svg)] bg-cover">
             {children}
           </div>
         </main>
