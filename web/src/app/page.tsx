@@ -29,7 +29,14 @@ export default async function Home() {
   });
   const memories: Memory[] = reponse.data;
   if (memories.length === 0) return <EmptyMemories />;
-
+  
+  // TODO: Add edit memory
+  // TODO: Add delete memory
+  // TODO: Add Share memory
+  // TODO: Add image date picker
+  // TODO: Add responsiveness
+  // TODO: Add see more option
+  
   return (
     <div className="flex flex-col gap-10 p-8">
       {memories.map(({ coverUrl, createdAt, excerpt, id }) => (
